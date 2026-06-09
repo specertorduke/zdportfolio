@@ -97,7 +97,25 @@ document.addEventListener("DOMContentLoaded", () => {
         "-=0.5"
     );
 
-    // 4. Scroll Animations (GSAP ScrollTrigger)
+    // 4. Smart/Hide Navbar on Scroll Down
+    let lastScrollTop = 0;
+    const navbar = document.querySelector('.navbar');
+    
+    window.addEventListener('scroll', () => {
+        let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // If scrolling down and past the initial 100px
+        if (currentScroll > lastScrollTop && currentScroll > 100) {
+            navbar.classList.add('nav-hidden');
+        } else {
+            // Scrolling up or at the very top
+            navbar.classList.remove('nav-hidden');
+        }
+        
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // Avoid negative values on bounce back
+    }, { passive: true });
+
+    // 5. Scroll Animations (GSAP ScrollTrigger)
     
     // Reveal text elements (fade and translate up)
     const revealElements = document.querySelectorAll('.reveal-up');
