@@ -196,51 +196,249 @@ document.addEventListener("DOMContentLoaded", () => {
         ease: "power3.out"
     }, "-=0.3");
 
-    // Click trigger to Enter the portfolio
-    const enterBtn = document.getElementById("enter-btn");
-    if (enterBtn) {
-        enterBtn.addEventListener("click", () => {
-            enterBtn.style.pointerEvents = "none";
+    // Interactive Canvas Plexus Background Setup
+    const canvas = document.querySelector(".intro-canvas");
+    if (canvas) {
+        const ctx = canvas.getContext("2d");
+        let particles = [];
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
 
-            const exitTl = gsap.timeline({
-                onComplete: () => {
-                    document.body.classList.remove("loading");
-                    const overlay = document.querySelector(".intro-overlay");
-                    if (overlay) overlay.remove();
+        const maxParticles = Math.min(80, Math.floor((width * height) / 15000));
+        let mouse = { x: null, y: null, radius: 180 };
 
-                    // Run page entry timeline
-                    runMainReveal();
+        window.addEventListener("resize", () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const overlay = document.querySelector(".intro-overlay");
+        if (overlay) {
+            overlay.addEventListener("mousemove", (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            });
+            overlay.addEventListener("mouseleave", () => {
+                mouse.x = null;
+                mouse.y = null;
+            });
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.6;
+                this.vy = (Math.random() - 0.5) * 0.6;
+                this.radius = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+
+                if (mouse.x !== null && mouse.y !== null) {
+                    const dx = this.x - mouse.x;
+                    const dy = this.y - mouse.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < mouse.radius) {
+                        const force = (mouse.radius - dist) / mouse.radius;
+                        this.x += (dx / dist) * force * 1.5;
+                        this.y += (dy / dist) * force * 1.5;
+                    }
                 }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(0, 240, 255, 0.4)";
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < maxParticles; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            ctx.fillStyle = "rgba(0, 240, 255, 0.015)";
+            const gridSize = 40;
+            for (let x = 0; x < width; x += gridSize) {
+                for (let y = 0; y < height; y += gridSize) {
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
             });
 
-            // Pulse effect feedback
-            exitTl.to(enterBtn, {
-                scale: 0.95,
-                opacity: 0,
-                duration: 0.2,
-                ease: "power2.out"
-            });
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p1 = particles[i];
+                    const p2 = particles[j];
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
 
-            // Expand core (zoom portal transition)
-            exitTl.to(".intro-core", {
-                scale: 12,
-                opacity: 0,
-                duration: 1.4,
-                ease: "power4.inOut"
-            }, "-=0.1");
+                    if (dist < 100) {
+                        const alpha = ((100 - dist) / 100) * 0.15;
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(0, 240, 255, ${alpha})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
 
-            exitTl.to(".intro-text", {
-                y: -60,
-                opacity: 0,
-                duration: 0.8,
-                ease: "power3.in"
-            }, "-=1.2");
+                if (mouse.x !== null && mouse.y !== null) {
+                    const p = particles[i];
+                    const dx = p.x - mouse.x;
+                    const dy = p.y - mouse.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
 
-            exitTl.to(".intro-overlay", {
-                opacity: 0,
-                duration: 0.9,
-                ease: "power2.out"
-            }, "-=0.7");
+                    if (dist < mouse.radius) {
+                        const alpha = ((mouse.radius - dist) / mouse.radius) * 0.25;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.strokeStyle = `rgba(0, 240, 255, ${alpha})`;
+                        ctx.lineWidth = 0.7;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            if (document.body.contains(canvas)) {
+                requestAnimationFrame(animate);
+            }
+        }
+        animate();
+    }
+
+    // Slide to Access Decryption Lock
+    const sliderContainer = document.querySelector(".intro-slider-container");
+    const sliderHandle = document.querySelector(".intro-slider-handle");
+    const sliderFill = document.querySelector(".intro-slider-fill");
+    const sliderText = document.querySelector(".intro-slider-text");
+
+    if (sliderContainer && sliderHandle) {
+        let isDragging = false;
+        let startX = 0;
+        let containerWidth = sliderContainer.clientWidth;
+        let handleWidth = sliderHandle.clientWidth;
+        let maxX = containerWidth - handleWidth - 6;
+
+        const onDragStart = (e) => {
+            isDragging = true;
+            startX = (e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0)) - (parseFloat(sliderHandle.style.left) || 3);
+            sliderHandle.style.transition = "none";
+            sliderFill.style.transition = "none";
+            document.body.style.cursor = "grabbing";
+        };
+
+        const onDragMove = (e) => {
+            if (!isDragging) return;
+            const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : null);
+            if (clientX === null) return;
+
+            let x = clientX - startX;
+            if (x < 3) x = 3;
+            if (x > maxX + 3) x = maxX + 3;
+
+            sliderHandle.style.left = x + "px";
+            sliderFill.style.width = (x + handleWidth / 2) + "px";
+
+            const progress = (x - 3) / maxX;
+            sliderText.style.opacity = Math.max(0, 1 - progress * 1.5);
+        };
+
+        const onDragEnd = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            document.body.style.cursor = "";
+
+            const currentX = parseFloat(sliderHandle.style.left) || 3;
+            if (currentX >= maxX - 10) {
+                sliderHandle.style.left = (maxX + 3) + "px";
+                sliderFill.style.width = "100%";
+                sliderContainer.classList.add("unlocked", "scanning");
+
+                const handleIcon = sliderHandle.querySelector(".handle-icon");
+                const successIcon = sliderHandle.querySelector(".success-icon");
+                if (handleIcon) handleIcon.style.display = "none";
+                if (successIcon) successIcon.style.display = "block";
+
+                sliderText.textContent = "ACCESS GRANTED";
+                sliderText.style.opacity = "1";
+
+                setTimeout(() => {
+                    const exitTl = gsap.timeline({
+                        onComplete: () => {
+                            document.body.classList.remove("loading");
+                            const overlay = document.querySelector(".intro-overlay");
+                            if (overlay) overlay.remove();
+                            runMainReveal();
+                        }
+                    });
+
+                    exitTl.to(sliderContainer, {
+                        scale: 0.95,
+                        opacity: 0,
+                        duration: 0.3,
+                        ease: "power2.out"
+                    });
+
+                    exitTl.to(".intro-core", {
+                        scale: 12,
+                        opacity: 0,
+                        duration: 1.4,
+                        ease: "power4.inOut"
+                    }, "-=0.1");
+
+                    exitTl.to(".intro-text", {
+                        y: -60,
+                        opacity: 0,
+                        duration: 0.8,
+                        ease: "power3.in"
+                    }, "-=1.2");
+
+                    exitTl.to(".intro-overlay", {
+                        opacity: 0,
+                        duration: 0.9,
+                        ease: "power2.out"
+                    }, "-=0.7");
+                }, 600);
+            } else {
+                sliderHandle.style.transition = "left 0.3s cubic-bezier(0.25, 1, 0.5, 1)";
+                sliderFill.style.transition = "width 0.3s cubic-bezier(0.25, 1, 0.5, 1)";
+                sliderHandle.style.left = "3px";
+                sliderFill.style.width = "0%";
+                sliderText.style.opacity = "1";
+            }
+        };
+
+        sliderHandle.addEventListener("mousedown", onDragStart);
+        sliderHandle.addEventListener("touchstart", onDragStart, { passive: true });
+
+        window.addEventListener("mousemove", onDragMove);
+        window.addEventListener("touchmove", onDragMove, { passive: false });
+
+        window.addEventListener("mouseup", onDragEnd);
+        window.addEventListener("touchend", onDragEnd);
+
+        window.addEventListener("resize", () => {
+            containerWidth = sliderContainer.clientWidth;
+            handleWidth = sliderHandle.clientWidth;
+            maxX = containerWidth - handleWidth - 6;
         });
     }
 
@@ -253,11 +451,11 @@ document.addEventListener("DOMContentLoaded", () => {
             { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
         ).fromTo(".hero .reveal-text > *",
             { y: 80, opacity: 0 },
-            { 
-                y: 0, 
-                opacity: 1, 
-                duration: 1.0, 
-                stagger: 0.15, 
+            {
+                y: 0,
+                opacity: 1,
+                duration: 1.0,
+                stagger: 0.15,
                 ease: "power4.out",
                 onComplete: () => {
                     gsap.set(".hero-cta", { overflow: "visible" });
@@ -372,97 +570,89 @@ document.addEventListener("DOMContentLoaded", () => {
                     <rect x="10" y="10" width="580" height="360" rx="6" stroke="var(--accent-color)" stroke-width="1" stroke-dasharray="10 5" fill="none" opacity="0.3" />
                     <path d="M 10 30 L 100 30" stroke="var(--accent-color)" stroke-width="2" />
                     <path d="M 590 350 L 500 350" stroke="var(--accent-color)" stroke-width="2" />
-                    <text x="30" y="45" font-family="Courier, monospace" font-size="13" fill="var(--accent-color)" font-weight="bold" letter-spacing="1">CLIENT_BOOKING_PORTAL // UI_FLOW</text>
+                    <text x="30" y="45" font-family="Courier, monospace" font-size="13" fill="var(--accent-color)" font-weight="bold" letter-spacing="1">VET_CLINIC_APPOINTMENTS // TIME_SLOTS</text>
                     <g transform="translate(30, 80)">
                         <rect x="0" y="0" width="220" height="200" rx="4" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1" fill="none" />
-                        <text x="10" y="25" font-family="Courier, monospace" font-size="11" fill="#fff">SELECT APPOINTMENT</text>
+                        <text x="10" y="25" font-family="Courier, monospace" font-size="11" fill="#fff">APPOINTMENT SCHEDULER</text>
                         <line x1="10" y1="35" x2="210" y2="35" stroke="rgba(0, 240, 255, 0.2)" stroke-width="1" />
-                        <g transform="translate(15, 50)" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1" fill="none">
-                            <text x="5" y="-5" font-family="Courier, monospace" font-size="9" fill="var(--accent-secondary)" stroke="none">M T W T F S S</text>
-                            <rect x="0" y="5" width="22" height="20" />
-                            <rect x="27" y="5" width="22" height="20" />
-                            <rect x="54" y="5" width="22" height="20" />
-                            <rect x="81" y="5" width="22" height="20" />
-                            <rect x="108" y="5" width="22" height="20" />
-                            <rect x="135" y="5" width="22" height="20" stroke="var(--accent-color)" fill="rgba(0, 240, 255, 0.15)" stroke-width="1.5" class="bp-pulse" />
-                            <rect x="162" y="5" width="22" height="20" />
-                            <rect x="0" y="30" width="22" height="20" />
-                            <rect x="27" y="30" width="22" height="20" />
-                            <rect x="54" y="30" width="22" height="20" />
-                            <rect x="81" y="30" width="22" height="20" />
-                            <rect x="108" y="30" width="22" height="20" />
-                            <rect x="135" y="30" width="22" height="20" />
-                            <rect x="162" y="30" width="22" height="20" />
-                            <rect x="0" y="55" width="22" height="20" />
-                            <rect x="27" y="55" width="22" height="20" />
-                            <rect x="54" y="55" width="22" height="20" />
-                            <rect x="81" y="55" width="22" height="20" />
-                            <rect x="108" y="55" width="22" height="20" />
-                            <rect x="135" y="55" width="22" height="20" />
-                            <rect x="162" y="55" width="22" height="20" />
+                        
+                        <g transform="translate(15, 50)" font-family="Courier, monospace" font-size="9" fill="#ccc">
+                            <text x="0" y="10">09:00 AM [BOOKED]</text>
+                            <rect x="145" y="0" width="45" height="12" rx="2" fill="rgba(255, 0, 0, 0.15)" stroke="red" stroke-width="0.5" />
+                            <text x="148" y="9" font-size="7" fill="red">UNAVAIL</text>
+
+                            <text x="0" y="30">10:00 AM [PENDING]</text>
+                            <rect x="145" y="20" width="45" height="12" rx="2" fill="rgba(255, 165, 0, 0.15)" stroke="orange" stroke-width="0.5" />
+                            <text x="148" y="29" font-size="7" fill="orange">PENDING</text>
+
+                            <text x="0" y="50">11:00 AM [AVAILABLE]</text>
+                            <rect x="145" y="40" width="45" height="12" rx="2" fill="rgba(0, 240, 255, 0.15)" stroke="var(--accent-color)" stroke-width="0.5" class="bp-pulse" />
+                            <text x="148" y="49" font-size="7" fill="var(--accent-color)">SELECT</text>
+
+                            <text x="0" y="70">12:00 PM [AVAILABLE]</text>
+                            <rect x="145" y="60" width="45" height="12" rx="2" fill="rgba(0, 240, 255, 0.05)" stroke="rgba(0, 240, 255, 0.3)" stroke-width="0.5" />
+                            <text x="148" y="69" font-size="7" fill="#888">SELECT</text>
+                            
+                            <text x="0" y="90">01:00 PM [AVAILABLE]</text>
+                            <rect x="145" y="80" width="45" height="12" rx="2" fill="rgba(0, 240, 255, 0.05)" stroke="rgba(0, 240, 255, 0.3)" stroke-width="0.5" />
+                            <text x="148" y="89" font-size="7" fill="#888">SELECT</text>
                         </g>
-                        <text x="15" y="180" font-family="Courier, monospace" font-size="9" fill="var(--accent-color)" opacity="0.8">SELECTED: JUNE 14, 2025</text>
+                        <text x="15" y="180" font-family="Courier, monospace" font-size="9" fill="var(--accent-color)" opacity="0.8">SLOT_INTERVAL: 60 MIN</text>
                     </g>
                     <g transform="translate(280, 80)">
                         <rect x="0" y="0" width="290" height="200" rx="4" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1" fill="none" />
-                        <text x="15" y="25" font-family="Courier, monospace" font-size="11" fill="#fff">BOOKING PARAMS & PRICING</text>
+                        <text x="15" y="25" font-family="Courier, monospace" font-size="11" fill="#fff">APPOINTMENT SUMMARY</text>
                         <line x1="15" y1="35" x2="275" y2="35" stroke="rgba(0, 240, 255, 0.2)" stroke-width="1" />
                         <rect x="15" y="50" width="260" height="25" rx="3" stroke="rgba(0, 240, 255, 0.2)" fill="rgba(0,240,255,0.03)" />
-                        <text x="25" y="66" font-family="Courier, monospace" font-size="9" fill="#bbb">BREED: Poodle (Large)</text>
-                        <path d="M 260 60 L 265 65 L 270 60" stroke="var(--accent-color)" stroke-width="1.5" fill="none" />
+                        <text x="25" y="66" font-family="Courier, monospace" font-size="9" fill="#bbb">PET: Rocky (G. Shepherd)</text>
+                        
                         <rect x="15" y="85" width="260" height="25" rx="3" stroke="rgba(0, 240, 255, 0.2)" fill="rgba(0,240,255,0.03)" />
-                        <text x="25" y="101" font-family="Courier, monospace" font-size="9" fill="#bbb">SERVICE: Full Groom & Spa</text>
-                        <path d="M 260 95 L 265 100 L 270 95" stroke="var(--accent-color)" stroke-width="1.5" fill="none" />
+                        <text x="25" y="101" font-family="Courier, monospace" font-size="9" fill="#bbb">SERVICE: Anti-Rabies Vaccine</text>
+                        
                         <g transform="translate(15, 122)">
-                            <text x="0" y="12" font-family="Courier, monospace" font-size="9" fill="#888">BASE GROOMING FEE ............ $45.00</text>
-                            <text x="0" y="27" font-family="Courier, monospace" font-size="9" fill="#888">LARGE BREED TARIFF ........... $10.00</text>
+                            <text x="0" y="12" font-family="Courier, monospace" font-size="9" fill="#888">SERVICE BASE FEE ............. $35.00</text>
+                            <text x="0" y="27" font-family="Courier, monospace" font-size="9" fill="#888">SCHEDULING TARIFF ............ $0.00</text>
                             <line x1="0" y1="35" x2="260" y2="35" stroke="rgba(0,240,255,0.15)" stroke-width="1" stroke-dasharray="3 3" />
-                            <text x="0" y="52" font-family="Courier, monospace" font-size="11" fill="var(--accent-color)" font-weight="bold">TOTAL CALCULATED: $55.00</text>
+                            <text x="0" y="52" font-family="Courier, monospace" font-size="11" fill="var(--accent-color)" font-weight="bold">TOTAL DUE: $35.00</text>
                         </g>
                     </g>
                     <path d="M 30 310 L 570 310" stroke="rgba(0, 240, 255, 0.2)" stroke-width="1" />
                     <circle cx="45" cy="330" r="4" fill="var(--accent-color)" class="bp-pulse" />
-                    <text x="60" y="334" font-family="Courier, monospace" font-size="9" fill="var(--accent-color)" opacity="0.8">PRICING_ENGINE: ONLINE</text>
+                    <text x="60" y="334" font-family="Courier, monospace" font-size="9" fill="var(--accent-color)" opacity="0.8">TIMESLOT_VALIDATOR: STABLE</text>
                     <rect x="460" y="320" width="110" height="22" rx="3" stroke="var(--accent-color)" fill="rgba(0,240,255,0.05)" />
-                    <text x="475" y="335" font-family="Courier, monospace" font-size="9" fill="var(--accent-color)" font-weight="bold" letter-spacing="1">SUBMIT_FLOW</text>
+                    <text x="475" y="335" font-family="Courier, monospace" font-size="9" fill="var(--accent-color)" font-weight="bold" letter-spacing="1">SUBMIT_APPT</text>
                 </svg>
                 `;
             } else if (slideIndex === 1) {
                 return `
                 <svg class="blueprint-svg" viewBox="0 0 600 380">
                     <rect x="10" y="10" width="580" height="360" rx="6" stroke="var(--accent-color)" stroke-width="1" stroke-dasharray="10 5" fill="none" opacity="0.3" />
-                    <text x="30" y="45" font-family="Courier, monospace" font-size="13" fill="var(--accent-color)" font-weight="bold" letter-spacing="1">ADMIN_SCHEDULER // ALLOC_BOARD</text>
+                    <text x="30" y="45" font-family="Courier, monospace" font-size="13" fill="var(--accent-color)" font-weight="bold" letter-spacing="1">PET_BOARDING_LODGING // CAPACITY_CHECK</text>
                     <g transform="translate(30, 75)">
                         <rect x="0" y="0" width="540" height="210" rx="4" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1" fill="none" />
-                        <line x1="0" y1="35" x2="540" y2="35" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1.5" />
-                        <line x1="100" y1="0" x2="100" y2="210" stroke="rgba(0, 240, 255, 0.2)" stroke-width="1" />
-                        <line x1="320" y1="0" x2="320" y2="210" stroke="rgba(0, 240, 255, 0.2)" stroke-width="1" />
-                        <text x="15" y="22" font-family="Courier, monospace" font-size="11" fill="var(--accent-secondary)" font-weight="bold">TIME</text>
-                        <text x="115" y="22" font-family="Courier, monospace" font-size="11" fill="var(--accent-color)" font-weight="bold">STATION A (GROOMING)</text>
-                        <text x="335" y="22" font-family="Courier, monospace" font-size="11" fill="var(--accent-color)" font-weight="bold">STATION B (BOARDING)</text>
-                        <line x1="0" y1="75" x2="540" y2="75" stroke="rgba(0, 240, 255, 0.15)" stroke-width="1" />
-                        <line x1="0" y1="115" x2="540" y2="115" stroke="rgba(0, 240, 255, 0.15)" stroke-width="1" />
-                        <line x1="0" y1="155" x2="540" y2="155" stroke="rgba(0, 240, 255, 0.15)" stroke-width="1" />
-                        <text x="15" y="58" font-family="Courier, monospace" font-size="10" fill="#fff">08:00 AM</text>
-                        <rect x="110" y="42" width="195" height="26" rx="3" stroke="var(--accent-color)" fill="rgba(0, 240, 255, 0.12)" stroke-width="1.2" />
-                        <text x="120" y="58" font-family="Courier, monospace" font-size="9" fill="var(--accent-color)" font-weight="bold">MAX (POODLE) - COMPLETE GROOM</text>
-                        <text x="335" y="58" font-family="Courier, monospace" font-size="9" fill="#555" font-style="italic">-- IDLE --</text>
-                        <text x="15" y="98" font-family="Courier, monospace" font-size="10" fill="#fff">10:00 AM</text>
-                        <text x="115" y="98" font-family="Courier, monospace" font-size="9" fill="#555" font-style="italic">-- IDLE --</text>
-                        <rect x="330" y="82" width="195" height="26" rx="3" stroke="var(--accent-secondary)" fill="rgba(157, 78, 221, 0.12)" stroke-width="1.2" />
-                        <text x="340" y="98" font-family="Courier, monospace" font-size="9" fill="var(--accent-secondary)" font-weight="bold">ROCKY (G. SHEPHERD) - CABIN 04</text>
-                        <text x="15" y="138" font-family="Courier, monospace" font-size="10" fill="#fff">12:00 PM</text>
-                        <rect x="110" y="122" width="195" height="26" rx="3" stroke="var(--accent-color)" fill="rgba(0, 240, 255, 0.12)" stroke-width="1.2" />
-                        <text x="120" y="138" font-family="Courier, monospace" font-size="9" fill="var(--accent-color)" font-weight="bold">LUNA (PERSIAN CAT) - BATH & BRUSH</text>
-                        <text x="335" y="138" font-family="Courier, monospace" font-size="9" fill="#555" font-style="italic">-- IDLE --</text>
-                        <text x="15" y="185" font-family="Courier, monospace" font-size="10" fill="#fff">02:00 PM</text>
-                        <text x="115" y="185" font-family="Courier, monospace" font-size="9" fill="#bbb">SYSTEM CHECK IN: BELLA (RETRIEVER)</text>
+                        <text x="15" y="25" font-family="Courier, monospace" font-size="11" fill="var(--accent-secondary)" font-weight="bold">LODGING SCHEDULER & CAPACITY</text>
+                        <line x1="15" y1="35" x2="525" y2="35" stroke="rgba(0, 240, 255, 0.2)" stroke-width="1" />
+                        
+                        <g transform="translate(20, 50)" font-family="Courier, monospace" font-size="10" fill="#ccc">
+                            <text x="0" y="15">BOARDING TYPE: [OVERNIGHT]</text>
+                            <rect x="240" y="2" width="260" height="20" rx="3" stroke="rgba(0, 240, 255, 0.2)" fill="rgba(0,240,255,0.03)" />
+                            <text x="250" y="15" fill="#888">Daycare | *Overnight* | Extended</text>
+                            
+                            <text x="0" y="50">START DATE: [JUNE 15, 2025]</text>
+                            <text x="270" y="50">END DATE: [JUNE 18, 2025] (3 DAYS)</text>
+                            
+                            <line x1="0" y1="75" x2="500" y2="75" stroke="rgba(0, 240, 255, 0.15)" stroke-width="1" />
+                            
+                            <text x="0" y="105" fill="var(--accent-color)" font-weight="bold">DB_LOCK: checkBoardingCapacity()</text>
+                            <text x="0" y="125">OCCUPANTS IN DATE RANGE: 14 CLIENTS</text>
+                            <text x="0" y="145">MAX LODGING LIMIT: 20 CORES</text>
+                        </g>
                     </g>
                     <g transform="translate(30, 310)">
-                        <text x="0" y="15" font-family="Courier, monospace" font-size="11" fill="var(--accent-color)" font-weight="bold">OCCUPANCY RATE:</text>
+                        <text x="0" y="15" font-family="Courier, monospace" font-size="11" fill="var(--accent-color)" font-weight="bold">CAPACITY RATIO:</text>
                         <rect x="150" y="3" width="200" height="15" rx="3" stroke="rgba(0,240,255,0.3)" fill="none" />
-                        <rect x="153" y="6" width="150" height="9" rx="2" fill="var(--accent-color)" />
-                        <text x="365" y="15" font-family="Courier, monospace" font-size="11" fill="var(--accent-color)">75% ACTIVE</text>
+                        <rect x="153" y="6" width="140" height="9" rx="2" fill="var(--accent-color)" class="bp-pulse" />
+                        <text x="365" y="15" font-family="Courier, monospace" font-size="11" fill="var(--accent-color)">70% OCCUPIED // 6 VACANT</text>
                     </g>
                 </svg>
                 `;
@@ -470,54 +660,41 @@ document.addEventListener("DOMContentLoaded", () => {
                 return `
                 <svg class="blueprint-svg" viewBox="0 0 600 380">
                     <rect x="10" y="10" width="580" height="360" rx="6" stroke="var(--accent-color)" stroke-width="1" stroke-dasharray="10 5" fill="none" opacity="0.3" />
-                    <text x="30" y="45" font-family="Courier, monospace" font-size="13" fill="var(--accent-color)" font-weight="bold" letter-spacing="1">PATIENT_DATA // HEALTH_PROFILER</text>
+                    <text x="30" y="45" font-family="Courier, monospace" font-size="13" fill="var(--accent-color)" font-weight="bold" letter-spacing="1">PAYMENT_REGISTRY // POLYMORPHIC_VERIFICATION</text>
                     <g transform="translate(30, 75)">
                         <rect x="0" y="0" width="240" height="215" rx="5" stroke="rgba(0, 240, 255, 0.4)" fill="none" />
-                        <circle cx="120" cy="55" r="30" stroke="var(--accent-color)" fill="none" stroke-width="1.5" />
-                        <path d="M 95 45 L 85 25 L 105 35" stroke="var(--accent-color)" stroke-width="1.5" fill="none" />
-                        <path d="M 145 45 L 155 25 L 135 35" stroke="var(--accent-color)" stroke-width="1.5" fill="none" />
-                        <text x="120" y="105" font-family="Courier, monospace" font-size="12" fill="#fff" font-weight="bold" text-anchor="middle">ROCKY</text>
-                        <text x="120" y="120" font-family="Courier, monospace" font-size="9" fill="var(--accent-color)" text-anchor="middle">ID: FT-2025-0982</text>
-                        <line x1="20" y1="135" x2="220" y2="135" stroke="rgba(0,240,255,0.2)" />
-                        <text x="20" y="155" font-family="Courier, monospace" font-size="9" fill="#888">BREED: ..... GERMAN SHEPHERD</text>
-                        <text x="20" y="172" font-family="Courier, monospace" font-size="9" fill="#888">AGE: ....... 2 YEARS</text>
-                        <text x="20" y="189" font-family="Courier, monospace" font-size="9" fill="#888">GENDER: .... MALE (NEUTERED)</text>
-                        <text x="20" y="206" font-family="Courier, monospace" font-size="9" fill="#888">WEIGHT: .... 32.5 KG</text>
+                        <text x="20" y="25" font-family="Courier, monospace" font-size="11" fill="#fff" font-weight="bold">BILLING DETAILS</text>
+                        <line x1="20" y1="35" x2="220" y2="35" stroke="rgba(0,240,255,0.2)" />
+                        <text x="20" y="60" font-family="Courier, monospace" font-size="9" fill="#888">PAYEE ID: .... USER_ID#0482</text>
+                        <text x="20" y="80" font-family="Courier, monospace" font-size="9" fill="#888">PAYABLE TYPE: . App\\\\Models\\\\Boarding</text>
+                        <text x="20" y="100" font-family="Courier, monospace" font-size="9" fill="#888">TOTAL BILL: ... $135.00</text>
+                        <line x1="20" y1="120" x2="220" y2="120" stroke="rgba(0,240,255,0.2)" />
+                        <text x="20" y="145" font-family="Courier, monospace" font-size="9" fill="#fff">METHOD: GCash</text>
+                        <text x="20" y="165" font-family="Courier, monospace" font-size="9" fill="#fff">TYPE: 30% Deposit ($40.50)</text>
+                        <text x="20" y="190" font-family="Courier, monospace" font-size="9" fill="var(--accent-secondary)" font-weight="bold">REF NO: 2025091512345</text>
                     </g>
                     <g transform="translate(290, 75)">
                         <rect x="0" y="0" width="280" height="215" rx="5" stroke="rgba(0, 240, 255, 0.4)" fill="none" />
-                        <text x="15" y="22" font-family="Courier, monospace" font-size="11" fill="#fff" font-weight="bold">HEALTH & IMMUNOLOGY</text>
+                        <text x="15" y="22" font-family="Courier, monospace" font-size="11" fill="#fff" font-weight="bold">STAFF VERIFICATION QUEUE</text>
                         <line x1="15" y1="32" x2="265" y2="32" stroke="rgba(0,240,255,0.2)" />
-                        <text x="15" y="48" font-family="Courier, monospace" font-size="9" fill="var(--accent-color)">WEIGHT REGULATION MATRIX</text>
-                        <g transform="translate(15, 60)" stroke="rgba(0,240,255,0.2)" stroke-width="1">
-                            <line x1="0" y1="0" x2="0" y2="50" />
-                            <line x1="0" y1="50" x2="240" y2="50" />
-                            <path d="M 10 45 L 60 40 L 110 30 L 160 35 L 210 20 L 230 18" stroke="var(--accent-color)" stroke-width="2" fill="none" class="bp-dash-draw" />
-                            <circle cx="10" cy="45" r="3" fill="var(--accent-color)" />
-                            <circle cx="60" cy="40" r="3" fill="var(--accent-color)" />
-                            <circle cx="110" cy="30" r="3" fill="var(--accent-color)" />
-                            <circle cx="160" cy="35" r="3" fill="var(--accent-color)" />
-                            <circle cx="210" cy="20" r="3" fill="var(--accent-color)" />
-                            <circle cx="230" cy="18" r="3" fill="var(--accent-color)" />
+                        <text x="15" y="55" font-family="Courier, monospace" font-size="9" fill="var(--accent-color)">STATUS: PENDING STAFF SIGN-OFF</text>
+                        
+                        <g transform="translate(15, 80)" font-family="Courier, monospace" font-size="9" fill="#ccc">
+                            <text x="0" y="10">GCash Ref Format ..... [13 Digits] OK</text>
+                            <text x="0" y="30">User Verification ... [Google Sign-in] OK</text>
+                            <text x="0" y="50">Polymorphic Link .... [BoardingID #12] OK</text>
                         </g>
-                        <g transform="translate(15, 130)">
-                            <text x="0" y="12" font-family="Courier, monospace" font-size="9" fill="#fff">IMMUNIZATION RECORD:</text>
+                        
+                        <g transform="translate(15, 160)">
+                            <text x="0" y="12" font-family="Courier, monospace" font-size="9" fill="#fff">EMAIL NOTIFIER TRIGGERS:</text>
                             <rect x="0" y="22" width="10" height="10" stroke="var(--accent-color)" fill="rgba(0,240,255,0.2)" />
                             <path d="M 2 27 L 4 29 L 8 23" stroke="var(--accent-color)" stroke-width="1.5" fill="none" />
-                            <text x="18" y="31" font-family="Courier, monospace" font-size="9" fill="#ccc">RABIES VACCINE</text>
-                            <rect x="130" y="22" width="10" height="10" stroke="var(--accent-color)" fill="rgba(0,240,255,0.2)" />
-                            <path d="M 2 27 L 4 29 L 8 23" stroke="var(--accent-color)" stroke-width="1.5" fill="none" />
-                            <text x="148" y="31" font-family="Courier, monospace" font-size="9" fill="#ccc">BORDETELLA</text>
-                            <rect x="0" y="42" width="10" height="10" stroke="var(--accent-color)" fill="rgba(0,240,255,0.2)" />
-                            <path d="M 2 27 L 4 29 L 8 23" stroke="var(--accent-color)" stroke-width="1.5" fill="none" />
-                            <text x="18" y="51" font-family="Courier, monospace" font-size="9" fill="#ccc">DHPP CORE STACK</text>
+                            <text x="18" y="31" font-family="Courier, monospace" font-size="9" fill="#ccc">BookingConfirmation Mail</text>
                         </g>
                     </g>
                     <g transform="translate(30, 310)">
-                        <rect x="0" y="0" width="540" height="30" rx="3" stroke="rgba(255, 0, 0, 0.4)" fill="rgba(255, 0, 0, 0.08)" stroke-width="1" />
-                        <path d="M 20 8 L 28 22 L 12 22 Z" fill="none" stroke="red" stroke-width="1.5" />
-                        <text x="20" y="19" font-family="Courier, monospace" font-size="9" fill="red" text-anchor="middle" font-weight="bold">!</text>
-                        <text x="40" y="19" font-family="Courier, monospace" font-size="10" fill="red" font-weight="bold">CRITICAL_ALLERGIES_REPORTED: PENICILLIN, PEANUT BUTTER</text>
+                        <rect x="0" y="0" width="540" height="30" rx="3" stroke="rgba(0, 240, 255, 0.3)" fill="rgba(0, 240, 255, 0.05)" stroke-width="1" />
+                        <text x="20" y="19" font-family="Courier, monospace" font-size="10" fill="var(--accent-color)" font-weight="bold">TRANSACTION: PENDING STAFF VERIFICATION TO COMPLETE RESERVATION</text>
                     </g>
                 </svg>
                 `;
@@ -787,7 +964,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 {
                     imgSrc: "assets/img/PhishVote images/PV4.jpg",
-                    caption: "",
+                    caption: "This analysis report visualizes the tree-based ensemble's decision-making process, detailing the specific structural and lexical feature importances that drive the model's final soft-voting probability.",
                     overlayText: ""
                 }
             ]
@@ -796,20 +973,64 @@ document.addEventListener("DOMContentLoaded", () => {
             title: "FurryTails",
             role: "Lead Developer",
             year: "2025",
-            desc: "An Online Pet Grooming and Boarding Reservation System designed to automate reservation workflows and optimize user experience. Features real-time client booking validation, pricing calculations based on pet characteristics, and a visual room/staff allocation grid board for administrators.",
-            tags: ["PHP / Laravel", "MySQL", "JavaScript", "HTML/CSS", "Bootstrap"],
+            desc: "A comprehensive Pet Boarding & Veterinary Services Management System designed to automate clinic appointments, lodging reservations, and billing workflows. Features secure Google OAuth integration, client-side scheduling with real-time 1-hour slot availability, capacity-checked boarding, and polymorphic payment verification.",
+            tags: ["PHP / Laravel", "MySQL", "JavaScript", "HTML/CSS", "TailwindCSS"],
+            codeLink: "https://github.com/specertorduke/furrytails_project",
             slides: [
                 {
-                    caption: "Client Booking Panel: Real-time date scheduling, service item checklist, and Large-Breed pricing surcharge calculations.",
-                    overlayText: "MODULE: BOOKING_SCHEMATIC\\nRESOLVING APPOINTMENT TIMESLOTS...\\nPRICING ENGINES OUT: PASS"
+                    imgSrc: "assets/img/FurryTails images/landing page.jpg",
+                    caption: "Public Landing Page: A welcoming homepage featuring introductory text, services, and clear calls-to-action for signing in and getting started.",
+                    overlayText: ""
                 },
                 {
-                    caption: "Admin Allocation Grid: Visual grid scheduler showing booked room/staff channels, time slot allocations, and occupancy level metrics.",
-                    overlayText: "MODULE: GRID_SCHEDULER_MATRIX\\nOCCUPANCY COUNT: 75% OF SYSTEM LIMIT\\nALLOC_CHECK: SUCCESS"
+                    imgSrc: "assets/img/FurryTails images/log in.jpg",
+                    caption: "Login Page: A secure authentication gateway supporting standard credential entries and one-click Google OAuth sign-in integrations.",
+                    overlayText: ""
                 },
                 {
-                    caption: "Pet Health Profiler: Complete digital chart profiling patient details, immunisation records, and highlighted allergen flags.",
-                    overlayText: "MODULE: HEALTH_PROFILER_STACK\\nWARNING: PENICILLIN DETECTED\\nAUTO_VACCINE_VALIDATION: PASS"
+                    imgSrc: "assets/img/FurryTails images/sign up.jpg",
+                    caption: "Sign Up Page: An account registration portal featuring real-time client-side inputs validation for user sign-ups.",
+                    overlayText: ""
+                },
+                {
+                    imgSrc: "assets/img/FurryTails images/user dashboard.jpg",
+                    caption: "User Dashboard Portal: An intuitive client dashboard showing today's upcoming appointments, active boardings, and registered pets with quick-action booking buttons.",
+                    overlayText: ""
+                },
+                {
+                    imgSrc: "assets/img/FurryTails images/user pets.jpg",
+                    caption: "User Pets Panel: A list view where pet owners can register, update, and manage the profiles of their active pets.",
+                    overlayText: ""
+                },
+                {
+                    imgSrc: "assets/img/FurryTails images/user view pet modal.jpg",
+                    caption: "Pet Detail Modal: A quick-view overlay displaying a specific pet's core characteristics, biological metrics, and immunization records.",
+                    overlayText: ""
+                },
+                {
+                    imgSrc: "assets/img/FurryTails images/user add appointment modal.jpg",
+                    caption: "Add Appointment Modal: An overlay dialog letting users select registered pets, scheduling dates, available 1-hour time slots, and target services.",
+                    overlayText: ""
+                },
+                {
+                    imgSrc: "assets/img/FurryTails images/admin dashboard.jpg",
+                    caption: "Admin Analytics Dashboard: A centralized administrative panel showcasing system metrics for total users, pets, appointments, and active boarding allocations.",
+                    overlayText: ""
+                },
+                {
+                    imgSrc: "assets/img/FurryTails images/admin services.jpg",
+                    caption: "Services Management Portal: An admin interface for creating, modifying, and categorizing boarding, grooming, veterinary, and training offerings.",
+                    overlayText: ""
+                },
+                {
+                    imgSrc: "assets/img/FurryTails images/admin view service modal.jpg",
+                    caption: "Service Details Modal: An admin popup containing description logs, pricing figures, and category tags for active catalog offerings.",
+                    overlayText: ""
+                },
+                {
+                    imgSrc: "assets/img/FurryTails images/admin system settings.jpg",
+                    caption: "System Settings Panel: An administration dashboard for adjusting general clinic hours, appointment slot durations, and system-wide boarding capacity limits.",
+                    overlayText: ""
                 }
             ]
         },

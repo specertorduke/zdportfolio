@@ -190,10 +190,9 @@ body.loading .scroll-indicator {
 }
 
 .intro-core {
-    width: 160px;
-    height: 160px;
+    width: 200px;
+    height: 200px;
     position: absolute;
-    transform-style: preserve-3d;
     opacity: 0;
     transform: scale(0.5);
     display: flex;
@@ -201,94 +200,122 @@ body.loading .scroll-indicator {
     align-items: center;
 }
 
-.core-ring {
-    position: absolute;
-    border-radius: 50%;
+.intro-hud-svg {
     width: 100%;
     height: 100%;
-    border: 1.5px solid transparent;
+    overflow: visible;
 }
 
-.core-ring-1 {
-    border-color: var(--accent-color);
-    animation: rotateRing1 8s linear infinite;
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+.hud-ring-cw {
+    transform-origin: 100px 100px;
+    animation: hudSpinCW 20s linear infinite;
 }
 
-.core-ring-2 {
-    border-color: var(--accent-secondary);
-    animation: rotateRing2 8s linear infinite;
-    box-shadow: 0 0 10px rgba(157, 78, 221, 0.1);
+.hud-ring-ccw {
+    transform-origin: 100px 100px;
+    animation: hudSpinCCW 15s linear infinite;
 }
 
-.core-ring-3 {
-    border: 1px dashed rgba(0, 240, 255, 0.3);
-    width: 110%;
-    height: 110%;
-    animation: rotateRing3 12s linear infinite;
+.hud-ring-cw-fast {
+    transform-origin: 100px 100px;
+    animation: hudSpinCW 8s linear infinite;
 }
 
-.core-sphere {
-    width: 44px;
-    height: 44px;
-    background: radial-gradient(circle at 35% 35%, var(--accent-color) 0%, #030305 75%);
-    border-radius: 50%;
-    position: absolute;
-    box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 240, 255, 0.35);
-    border: 1px solid rgba(0, 240, 255, 0.25);
-    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+.hud-sweep {
+    transform-origin: 100px 100px;
+    animation: hudSpinCW 4s linear infinite;
 }
 
-/* Core hover reactions - accelerate spin and glow */
-.intro-overlay:has(#enter-btn:hover) .core-ring-1 {
-    animation-duration: 2.5s;
-    border-width: 2px;
+.hud-center-node {
+    animation: hudNodePulse 2s ease-in-out infinite;
 }
 
-.intro-overlay:has(#enter-btn:hover) .core-ring-2 {
-    animation-duration: 2.5s;
-    border-width: 2px;
+.hud-node-pulse {
+    animation: hudFadePulse 1.5s ease-in-out infinite;
 }
 
-.intro-overlay:has(#enter-btn:hover) .core-ring-3 {
+.hud-node-pulse-delayed {
+    animation: hudFadePulse 1.5s ease-in-out infinite;
+    animation-delay: 0.75s;
+}
+
+.hud-text {
+    font-family: 'Courier New', monospace;
+    font-size: 8px;
+    fill: #ffffff;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.hud-text-1 {
+    animation: hudFade1 8s infinite;
+}
+
+.hud-text-2 {
+    animation: hudFade2 8s infinite;
+}
+
+/* Hover over enter-btn: HUD reacts energetically */
+.intro-overlay:has(#enter-btn:hover) .hud-ring-cw {
+    animation-duration: 5s;
+}
+
+.intro-overlay:has(#enter-btn:hover) .hud-ring-ccw {
     animation-duration: 4s;
-    border-width: 1.5px;
 }
 
-.intro-overlay:has(#enter-btn:hover) .core-sphere {
-    box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.8), 0 0 45px rgba(0, 240, 255, 0.6);
-    border-color: rgba(0, 240, 255, 0.5);
-    scale: 1.15;
+.intro-overlay:has(#enter-btn:hover) .hud-ring-cw-fast {
+    animation-duration: 2s;
 }
 
-@keyframes rotateRing1 {
-    0% {
-        transform: rotateX(65deg) rotateY(0deg) rotateZ(0deg);
-    }
+.intro-overlay:has(#enter-btn:hover) .hud-sweep {
+    animation-duration: 1.5s;
+}
 
-    100% {
-        transform: rotateX(65deg) rotateY(360deg) rotateZ(360deg);
+.intro-overlay:has(#enter-btn:hover) .hud-center-node {
+    animation-duration: 0.6s;
+    fill: #00ff66;
+}
+
+/* Animations for Holographic HUD */
+@keyframes hudSpinCW {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes hudSpinCCW {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
+}
+
+@keyframes hudNodePulse {
+    0%, 100% {
+        r: 6px;
+        opacity: 0.7;
+        filter: drop-shadow(0 0 2px var(--accent-color));
+    }
+    50% {
+        r: 9px;
+        opacity: 1;
+        filter: drop-shadow(0 0 8px var(--accent-color));
     }
 }
 
-@keyframes rotateRing2 {
-    0% {
-        transform: rotateX(-50deg) rotateY(0deg) rotateZ(0deg);
-    }
-
-    100% {
-        transform: rotateX(-50deg) rotateY(-360deg) rotateZ(-360deg);
-    }
+@keyframes hudFadePulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
 }
 
-@keyframes rotateRing3 {
-    0% {
-        transform: rotateX(15deg) rotateY(0deg) rotateZ(0deg);
-    }
+@keyframes hudFade1 {
+    0%, 45% { opacity: 1; }
+    50%, 95% { opacity: 0; }
+    100% { opacity: 1; }
+}
 
-    100% {
-        transform: rotateX(15deg) rotateY(360deg) rotateZ(-360deg);
-    }
+@keyframes hudFade2 {
+    0%, 45% { opacity: 0; }
+    50%, 95% { opacity: 1; }
+    100% { opacity: 0; }
 }
 
 /* Intro Typography & Text Elements */
@@ -357,30 +384,161 @@ body.loading .scroll-indicator {
     transform: translateY(20px);
 }
 
-.intro-btn {
-    background: rgba(0, 240, 255, 0.03);
-    border: 1px solid rgba(0, 240, 255, 0.25);
-    padding: 18px 40px;
-    border-radius: 50px;
-    color: #ffffff;
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.02);
+.intro-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
 }
 
-.intro-btn:hover {
-    background: rgba(0, 240, 255, 0.08);
+/* Interactive Slide to Decrypt Core Slider */
+.intro-slider-container {
+    width: 320px;
+    height: 60px;
+    background: rgba(0, 30, 45, 0.25);
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    border-radius: 50px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.05), 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 5;
+}
+
+.intro-slider-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.05), transparent);
+    transform: translateX(-100%);
+    animation: sliderGlitch 6s infinite linear;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.intro-slider-track {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.intro-slider-text {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: rgba(0, 240, 255, 0.4);
+    text-transform: uppercase;
+    user-select: none;
+    pointer-events: none;
+    z-index: 2;
+    transition: opacity 0.1s ease, color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.intro-slider-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, rgba(0, 240, 255, 0.03), rgba(0, 240, 255, 0.15));
+    border-radius: 50px 0 0 50px;
+    z-index: 1;
+    pointer-events: none;
+    box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1);
+}
+
+.intro-slider-handle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(0, 240, 255, 0.05));
+    border: 1.5px solid rgba(0, 240, 255, 0.4);
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.2), inset 0 0 8px rgba(0, 240, 255, 0.2);
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.intro-slider-handle:active {
+    cursor: grabbing;
+}
+
+.intro-slider-handle .handle-icon {
+    font-size: 1.1rem;
+    color: rgba(0, 240, 255, 0.8);
+    transition: transform 0.3s ease;
+}
+
+.intro-slider-handle:hover {
+    background: rgba(0, 240, 255, 0.12);
     border-color: var(--accent-color);
-    box-shadow: 0 0 35px rgba(0, 240, 255, 0.25);
-    letter-spacing: 3.5px;
-    color: var(--accent-color);
+    box-shadow: 0 0 18px rgba(0, 240, 255, 0.4);
+}
+
+.intro-slider-handle:hover .handle-icon {
+    animation: handlePulse 1.2s infinite ease-in-out;
+}
+
+/* Unlocked & Active Success Scanning State */
+.intro-slider-container.unlocked {
+    border-color: #00ff66 !important;
+    box-shadow: 0 0 30px rgba(0, 255, 102, 0.25), inset 0 0 15px rgba(0, 255, 102, 0.1) !important;
+}
+
+.intro-slider-container.unlocked .intro-slider-fill {
+    background: linear-gradient(90deg, rgba(0, 255, 102, 0.05), rgba(0, 255, 102, 0.2));
+}
+
+.intro-slider-container.unlocked .intro-slider-handle {
+    background: #00ff66 !important;
+    border-color: #00ff66 !important;
+    box-shadow: 0 0 20px #00ff66, inset 0 0 8px rgba(255, 255, 255, 0.5) !important;
+    cursor: default;
+}
+
+.intro-slider-container.unlocked .success-icon {
+    color: #030305 !important;
+    font-size: 1.4rem;
+    animation: successPulse 0.4s infinite alternate;
+}
+
+.intro-slider-container.unlocked .intro-slider-text {
+    color: #00ff66 !important;
+    text-shadow: 0 0 10px rgba(0, 255, 102, 0.6);
+}
+
+/* Telemetry Keyframes */
+@keyframes sliderGlitch {
+    0% { transform: translateX(-100%); }
+    20% { transform: translateX(100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes handlePulse {
+    0%, 100% { transform: translateX(0); opacity: 0.8; }
+    50% { transform: translateX(3px); opacity: 1; }
+}
+
+@keyframes successPulse {
+    0% { scale: 0.95; }
+    100% { scale: 1.15; }
 }
 
 .container {
@@ -1332,7 +1490,7 @@ body.portal-open main {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 50px 45px 35px 45px;
+    padding: 85px 45px 35px 45px;
 }
 
 .slideshow-track-wrapper {
@@ -1627,7 +1785,7 @@ body.portal-open main {
     .portal-media-col {
         width: 100%;
         height: auto;
-        padding: 40px 30px 20px 30px;
+        padding: 70px 20px 20px 20px;
     }
     .slideshow-container {
         padding: 0;
