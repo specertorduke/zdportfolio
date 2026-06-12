@@ -81,21 +81,188 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 3. Initial Load Animations
-    const tl = gsap.timeline();
+    // Helper function to split text into inline-block spans for individual animations
+    function splitTextIntoSpans(element) {
+        const text = element.textContent.trim();
+        element.innerHTML = "";
+        [...text].forEach(char => {
+            const span = document.createElement("span");
+            span.className = "char-trigger";
+            if (char === " ") {
+                span.innerHTML = "&nbsp;";
+            } else {
+                span.textContent = char;
+            }
+            element.appendChild(span);
+        });
+    }
+
+    // Prepare intro title characters for animation
+    const introTitle = document.querySelector(".intro-title");
+    if (introTitle) splitTextIntoSpans(introTitle);
+
+    // Set initial states for main page elements to prevent flashing
+    gsap.set(".navbar", { y: -30, opacity: 0 });
+    gsap.set(".hero .reveal-text > *", { y: 80, opacity: 0 });
+    gsap.set(".scroll-indicator", { opacity: 0 });
+
+    // 3. Intro Sequence Animations
+    const introTl = gsap.timeline();
     
-    tl.fromTo(".nav-logo, .nav-links a", 
-        { y: -20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" }
-    ).fromTo(".hero .reveal-text > *", 
-        { y: 100, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, stagger: 0.2, ease: "power4.out" },
-        "-=0.5"
-    ).fromTo(".scroll-indicator",
-        { opacity: 0 },
-        { opacity: 0.5, duration: 1 },
-        "-=0.5"
+    // First, show the particle
+    gsap.fromTo(".intro-particle", 
+        { scale: 0.3, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 1.2, ease: "power2.out" }
     );
+    
+    // Continuous pulse on particle
+    const pulseTween = gsap.to(".intro-particle", {
+        scale: 1.4,
+        opacity: 0.8,
+        duration: 0.8,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
+    });
+
+    // Morph particle to rotating cyber core
+    introTl.to(".intro-particle", {
+        scale: 4,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.inOut",
+        onComplete: () => {
+            pulseTween.kill();
+            const particle = document.querySelector(".intro-particle");
+            if (particle) particle.style.display = "none";
+        }
+    }, "+=0.2");
+
+    introTl.to(".intro-core", {
+        scale: 1,
+        opacity: 1,
+        duration: 1.0,
+        ease: "elastic.out(1, 0.75)"
+    }, "-=0.8");
+
+    // Swing-down 3D reveal for "hello !" characters
+    introTl.fromTo(".intro-title .char-trigger", 
+        { 
+            opacity: 0,
+            y: 40,
+            rotationX: -90,
+            transformPerspective: 600,
+            transformOrigin: "50% 0%"
+        },
+        { 
+            opacity: 1,
+            y: 0,
+            rotationX: 0,
+            duration: 0.8,
+            stagger: 0.06,
+            ease: "back.out(2.5)"
+        },
+        "-=0.6"
+    );
+
+    // Reveal divider line
+    introTl.to(".intro-divider", {
+        width: "140px",
+        duration: 0.8,
+        ease: "power2.inOut"
+    }, "-=0.5");
+
+    // Reveal subtitles with snappy elastic pop
+    introTl.fromTo(".intro-sub-item", 
+        { 
+            opacity: 0,
+            y: 35,
+            scale: 0.95
+        },
+        { 
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: "back.out(2)"
+        },
+        "-=0.4"
+    );
+
+    // Reveal Initialize button
+    introTl.to(".intro-trigger-container", {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power3.out"
+    }, "-=0.3");
+
+    // Click trigger to Enter the portfolio
+    const enterBtn = document.getElementById("enter-btn");
+    if (enterBtn) {
+        enterBtn.addEventListener("click", () => {
+            enterBtn.style.pointerEvents = "none";
+            
+            const exitTl = gsap.timeline({
+                onComplete: () => {
+                    document.body.classList.remove("loading");
+                    const overlay = document.querySelector(".intro-overlay");
+                    if (overlay) overlay.remove();
+                    
+                    // Run page entry timeline
+                    runMainReveal();
+                }
+            });
+            
+            // Pulse effect feedback
+            exitTl.to(enterBtn, {
+                scale: 0.95,
+                opacity: 0,
+                duration: 0.2,
+                ease: "power2.out"
+            });
+            
+            // Expand core (zoom portal transition)
+            exitTl.to(".intro-core", {
+                scale: 12,
+                opacity: 0,
+                duration: 1.4,
+                ease: "power4.inOut"
+            }, "-=0.1");
+            
+            exitTl.to(".intro-text", {
+                y: -60,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.in"
+            }, "-=1.2");
+            
+            exitTl.to(".intro-overlay", {
+                opacity: 0,
+                duration: 0.9,
+                ease: "power2.out"
+            }, "-=0.7");
+        });
+    }
+
+    // Page Reveal Timeline
+    function runMainReveal() {
+        const mainTl = gsap.timeline();
+        
+        mainTl.fromTo(".navbar", 
+            { y: -30, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
+        ).fromTo(".hero .reveal-text > *", 
+            { y: 80, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1.0, stagger: 0.15, ease: "power4.out" },
+            "-=0.5"
+        ).fromTo(".scroll-indicator",
+            { opacity: 0 },
+            { opacity: 0.5, duration: 1 },
+            "-=0.5"
+        );
+    }
 
     // 4. Smart/Hide Navbar on Scroll Down
     let lastScrollTop = 0;

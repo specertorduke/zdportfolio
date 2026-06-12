@@ -1,14 +1,17 @@
 :root {
-    --bg-color: #050505;
-    --text-color: #f5f5f5;
-    --accent-color: #ffffff;
-    --border-color: rgba(255, 255, 255, 0.15);
+    --bg-color: #040407;
+    --text-color: #f1f1f6;
+    --accent-color: #00f0ff;
+    --accent-secondary: #9d4edd;
+    --border-color: rgba(0, 240, 255, 0.12);
+    --card-bg: rgba(8, 8, 14, 0.6);
+    --card-border: rgba(0, 240, 255, 0.1);
     
     --font-heading: 'Syne', sans-serif;
     --font-body: 'Inter', sans-serif;
     
-    --cursor-size: 10px;
-    --cursor-follower-size: 40px;
+    --cursor-size: 8px;
+    --cursor-follower-size: 36px;
 }
 
 * {
@@ -25,14 +28,16 @@
     background: var(--bg-color); 
 }
 ::-webkit-scrollbar-thumb {
-    background: #444; 
+    background: rgba(0, 240, 255, 0.3); 
+    border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #666; 
+    background: var(--accent-color); 
 }
 
 html {
     scroll-behavior: smooth;
+    background-color: var(--bg-color);
 }
 
 body {
@@ -42,6 +47,23 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     cursor: none; /* Hide default cursor */
+    position: relative;
+}
+
+/* Cyber grid background */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: 50px 50px;
+    background-image: 
+        linear-gradient(to right, rgba(0, 240, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 240, 255, 0.015) 1px, transparent 1px);
+    pointer-events: none;
+    z-index: 1;
 }
 
 /* Custom Cursor */
@@ -66,10 +88,10 @@ body {
     left: 0;
     width: var(--cursor-follower-size);
     height: var(--cursor-follower-size);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 240, 255, 0.4);
     border-radius: 50%;
     pointer-events: none;
-    z-index: 9998;
+    z-index: 99998;
     transform: translate(-50%, -50%);
     transition: width 0.3s, height 0.3s, border-width 0.3s, border-color 0.3s;
 }
@@ -85,6 +107,258 @@ body {
     width: 80px;
     height: 80px;
     border-color: transparent;
+}
+
+/* Loading state for body */
+body.loading {
+    overflow: hidden;
+    height: 100vh;
+}
+
+body.loading .navbar,
+body.loading .hero-content,
+body.loading .scroll-indicator {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+/* Intro Overlay */
+.intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #030305;
+    z-index: 99990;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.intro-background-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: 50px 50px;
+    background-image: 
+        linear-gradient(to right, rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+.intro-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    width: 100%;
+    max-width: 600px;
+}
+
+/* Rotating Cybernetic Core Sphere */
+.intro-core-wrap {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 40px;
+    perspective: 1000px;
+}
+
+.intro-particle {
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    box-shadow: 0 0 25px 6px var(--accent-color);
+    position: absolute;
+    z-index: 5;
+    transform-origin: center;
+}
+
+.intro-core {
+    width: 160px;
+    height: 160px;
+    position: absolute;
+    transform-style: preserve-3d;
+    opacity: 0;
+    transform: scale(0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.core-ring {
+    position: absolute;
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    border: 1.5px solid transparent;
+}
+
+.core-ring-1 {
+    border-color: var(--accent-color);
+    animation: rotateRing1 8s linear infinite;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+}
+
+.core-ring-2 {
+    border-color: var(--accent-secondary);
+    animation: rotateRing2 8s linear infinite;
+    box-shadow: 0 0 10px rgba(157, 78, 221, 0.1);
+}
+
+.core-ring-3 {
+    border: 1px dashed rgba(0, 240, 255, 0.3);
+    width: 110%;
+    height: 110%;
+    animation: rotateRing3 12s linear infinite;
+}
+
+.core-sphere {
+    width: 44px;
+    height: 44px;
+    background: radial-gradient(circle at 35% 35%, var(--accent-color) 0%, #030305 75%);
+    border-radius: 50%;
+    position: absolute;
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.8), 0 0 30px rgba(0, 240, 255, 0.35);
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Core hover reactions - accelerate spin and glow */
+.intro-overlay:has(#enter-btn:hover) .core-ring-1 {
+    animation-duration: 2.5s;
+    border-width: 2px;
+}
+.intro-overlay:has(#enter-btn:hover) .core-ring-2 {
+    animation-duration: 2.5s;
+    border-width: 2px;
+}
+.intro-overlay:has(#enter-btn:hover) .core-ring-3 {
+    animation-duration: 4s;
+    border-width: 1.5px;
+}
+.intro-overlay:has(#enter-btn:hover) .core-sphere {
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.8), 0 0 45px rgba(0, 240, 255, 0.6);
+    border-color: rgba(0, 240, 255, 0.5);
+    scale: 1.15;
+}
+
+@keyframes rotateRing1 {
+    0% { transform: rotateX(65deg) rotateY(0deg) rotateZ(0deg); }
+    100% { transform: rotateX(65deg) rotateY(360deg) rotateZ(360deg); }
+}
+
+@keyframes rotateRing2 {
+    0% { transform: rotateX(-50deg) rotateY(0deg) rotateZ(0deg); }
+    100% { transform: rotateX(-50deg) rotateY(-360deg) rotateZ(-360deg); }
+}
+
+@keyframes rotateRing3 {
+    0% { transform: rotateX(15deg) rotateY(0deg) rotateZ(0deg); }
+    100% { transform: rotateX(15deg) rotateY(360deg) rotateZ(-360deg); }
+}
+
+/* Intro Typography & Text Elements */
+.intro-text {
+    text-align: center;
+}
+
+.intro-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    height: auto;
+    text-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+    perspective: 800px;
+    transform-style: preserve-3d;
+}
+
+.char-trigger {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(50px);
+}
+
+.intro-divider {
+    width: 0px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--accent-color), transparent);
+    margin: 0 auto 25px auto;
+}
+
+.intro-subtitle-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-height: 85px;
+}
+
+.intro-sub-item {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #888899;
+    opacity: 0;
+    transform: translateY(20px);
+    margin: 0;
+}
+
+.intro-sub-item.name {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 1.05rem;
+    letter-spacing: 4px;
+}
+
+.intro-trigger-container {
+    margin-top: 40px;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.intro-btn {
+    background: rgba(0, 240, 255, 0.03);
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    padding: 18px 40px;
+    border-radius: 50px;
+    color: #ffffff;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.02);
+}
+
+.intro-btn:hover {
+    background: rgba(0, 240, 255, 0.08);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.25);
+    letter-spacing: 3.5px;
+    color: var(--accent-color);
 }
 
 .container {
@@ -114,7 +388,7 @@ body {
 .line {
     width: 100%;
     height: 1px;
-    background-color: var(--border-color);
+    background: linear-gradient(to right, var(--accent-color), var(--accent-secondary), transparent);
     margin-top: 20px;
     transform-origin: left;
 }
