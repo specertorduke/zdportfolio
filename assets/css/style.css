@@ -686,8 +686,74 @@ body.loading .scroll-indicator {
     color: var(--accent-color);
 }
 
+/* Scholarships List and Items */
+.scholarships-list {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-left: 0 !important;
+}
+
+.scholarship-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-left: 0 !important;
+}
+
+.scholarship-item::before {
+    display: none !important; /* Remove bullet arrows for items with icons */
+}
+
+.institution-logo {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.1));
+}
+
+.scholarship-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.scholarship-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+.scholarship-issuer {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: #888899;
+}
+
+/* Detail Item & Education Logo Styling */
 .detail-item {
     margin-bottom: 40px;
+}
+
+.education-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.detail-logo {
+    height: 44px;
+    width: auto;
+    object-fit: contain;
+    margin-top: 5px;
+    filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.1));
+}
+
+.detail-text {
+    display: flex;
+    flex-direction: column;
 }
 
 .detail-label {
