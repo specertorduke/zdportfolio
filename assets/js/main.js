@@ -1038,21 +1038,34 @@ document.addEventListener("DOMContentLoaded", () => {
             title: "INSIGHTFUL",
             role: "Lead Developer",
             year: "2024",
-            desc: "Real-Time Object Detection, Text-Reader, and Color Recognition Prototype specifically developed for visually impaired assistance. Utilises light weight computer vision architectures and text-to-speech audio feedback systems to map environment assets into audio logs.",
-            tags: ["Python", "OpenCV", "TensorFlow", "JavaScript", "Web Speech API"],
+            desc: "A web-based accessibility app designed for blind and visually impaired users. Uses TensorFlow.js for real-time object detection, Tesseract.js for OCR text reading, and HSL-based color identification — all running 100% client-side in the browser. Every interaction is voice-first with haptic feedback, audio cues, and full ARIA accessibility, requiring no visual reading of the screen.",
+            tags: ["TensorFlow.js", "Tesseract.js", "Web Speech API", "JavaScript", "HTML/CSS"],
             codeLink: "https://github.com/specertorduke/insightful",
             slides: [
                 {
-                    caption: "Webcam Vision Viewport: Real-time object recognition mapping dashed target anchors and bounding coordinates to audio feeds.",
-                    overlayText: "MODULE: CNN_OBJECT_DETECT_STK\\nCLASS: CUP (0.98), KEYBOARD (0.91)\\nVISION_FPS: 30.0HZ // SYSTEM: STANDBY"
+                    imgSrc: "assets/img/Insightful images/splash screen.png",
+                    caption: "Splash Screen: A clean, minimal welcome page with the INSIGHTFUL branding and eye icon. Features a prominent 'START →' button and 'Tap anywhere to begin' prompt against a soft lavender gradient background.",
+                    overlayText: ""
                 },
                 {
-                    caption: "OCR Text Extraction Frame: Digital reading matrix highlighting target sentences and parsing characters directly to Text-To-Speech (TTS) audio synthesizer.",
-                    overlayText: "MODULE: OCR_TESSERACT_MATRIX\\nPARSE_STRING: 'WARNING: STEEP ELEVATION'\\nTTS_SYNTH: SOUND_OUT: ACTIVE"
+                    imgSrc: "assets/img/Insightful images/object detection.png",
+                    caption: "Object Detection Mode: The app's camera feed analyzing a desk scene with TensorFlow.js COCO-SSD. A glassmorphic result toast announces detected objects — a laptop (92%), cup (87%), cell phone (84%), and potted plant (78%) — with confidence scores spoken aloud.",
+                    overlayText: ""
                 },
                 {
-                    caption: "HSL Color Analyzer: Polar radial spectrum selector targeting pixel coordinates and outputting precise HSL ranges with matching tag profiles.",
-                    overlayText: "MODULE: COLOR_HEX_SWATCH\\nCOLOR DETECTED: #00F0FF (CYAN)\\nH:180 S:100% L:50% // CONF: 99.4%"
+                    imgSrc: "assets/img/Insightful images/text reader.png",
+                    caption: "Text Reader Mode: Tesseract.js OCR engine extracting printed text from a book page. The result toast displays the parsed content — 'Chapter 4: The Path Forward' — with the full paragraph read aloud through the Web Speech API.",
+                    overlayText: ""
+                },
+                {
+                    imgSrc: "assets/img/Insightful images/color detection.png",
+                    caption: "Color Detection Mode: The camera pointed at a vibrant bouquet of red and yellow flowers. The HSL color analyzer samples the center 40% of the frame and identifies the dominant color as Red, announced via voice output.",
+                    overlayText: ""
+                },
+                {
+                    imgSrc: "assets/img/Insightful images/menu navigation.png",
+                    caption: "Navigation Menu: The expanded hamburger menu showing all three modes — Object Detection, Text Reader, and Color Detection — each with descriptive text. The active mode (Color Detection) is highlighted in amber with a matching color-coded border.",
+                    overlayText: ""
                 }
             ]
         },
