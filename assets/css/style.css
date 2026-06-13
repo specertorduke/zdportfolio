@@ -1402,13 +1402,15 @@ body.portal-open main {
 
 .portal-close-btn {
     position: absolute;
-    top: 25px;
-    right: 25px;
+    top: 20px;
+    left: 20px;
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(0, 240, 255, 0.15);
+    background: rgba(6, 6, 10, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 240, 255, 0.25);
     color: #ffffff;
     display: flex;
     justify-content: center;
@@ -1417,6 +1419,7 @@ body.portal-open main {
     font-size: 1.2rem;
     z-index: 20;
     transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
 .portal-close-btn:hover {
@@ -1520,6 +1523,12 @@ body.portal-open main {
     padding: 10px 20px;
     font-size: 0.9rem;
     background: rgba(0, 240, 255, 0.02);
+}
+
+.portal-tech-section .tag:hover {
+    background: rgba(0, 240, 255, 0.15);
+    color: #ffffff;
+    border-color: var(--accent-color);
 }
 
 .portal-btn {
@@ -1869,13 +1878,33 @@ body.portal-open main {
         height: auto;
     }
 
+    .slideshow-track-wrapper {
+        overflow: visible;
+    }
+
+    .slideshow-track {
+        height: auto;
+        position: relative;
+    }
+
+    .slideshow-slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .slideshow-slide.active {
+        position: relative;
+    }
+
     .blueprint-mockup {
         margin: 0 auto;
+        aspect-ratio: 9/16;
     }
 
     .portal-close-btn {
         top: 15px;
-        right: 15px;
+        left: 15px;
         width: 44px;
         height: 44px;
     }
@@ -1934,6 +1963,21 @@ body.portal-open main {
 
     .portal-media-col {
         padding: 30px 20px 10px 20px;
+    }
+
+    .blueprint-mockup {
+        aspect-ratio: auto;
+        max-height: 60vh;
+    }
+
+    .portal-slide-img {
+        padding: 5px;
+        object-fit: cover;
+    }
+
+    .slideshow-caption {
+        margin-top: 15px;
+        font-size: 0.85rem;
     }
 }
 
