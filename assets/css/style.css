@@ -695,6 +695,19 @@ body.loading .scroll-indicator {
     width: 100%;
 }
 
+/* Active nav link glow when on its section */
+.nav-link.active {
+    color: var(--accent-color);
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.2);
+    transition: color 0.4s ease, text-shadow 0.4s ease;
+}
+
+.nav-link.active::after {
+    width: 100%;
+    background: var(--accent-color);
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.6), 0 0 16px rgba(0, 240, 255, 0.2);
+}
+
 /* Hero Section */
 .hero {
     min-height: 100vh;
@@ -808,11 +821,11 @@ body.loading .scroll-indicator {
     letter-spacing: -1px;
     margin-bottom: 30px;
     position: relative;
+    text-align: center;
 }
 
 .hero-name-line {
     display: block;
-    width: fit-content;
     white-space: nowrap;
     font-size: clamp(2.5rem, 8vw, 6rem);
     color: #ffffff;

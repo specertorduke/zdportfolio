@@ -116,19 +116,35 @@ document.addEventListener("DOMContentLoaded", () => {
     function fitHeroTitle() {
         const container = document.querySelector(".hero-content");
         if (!container) return;
-        const maxWidth = container.clientWidth;
+        const cs = getComputedStyle(container);
+        const maxWidth = container.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
 
         heroNameLines.forEach(line => {
-            // Reset to CSS default first
+            // Reset to CSS default
             line.style.fontSize = "";
-            const computedSize = parseFloat(getComputedStyle(line).fontSize);
-            let size = computedSize;
+            const text = line.textContent;
+            
+            // Create hidden measurer with same font
+            const measurer = document.createElement("span");
+            measurer.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;pointer-events:none;";
+            measurer.style.fontFamily = getComputedStyle(line).fontFamily;
+            measurer.style.fontWeight = getComputedStyle(line).fontWeight;
+            measurer.style.letterSpacing = getComputedStyle(line).letterSpacing;
+            measurer.style.textTransform = "uppercase";
+            measurer.textContent = text;
+            document.body.appendChild(measurer);
 
-            // Shrink until it fits
-            while (line.scrollWidth > maxWidth && size > 14) {
-                size -= 0.5;
-                line.style.fontSize = size + "px";
+            let size = parseFloat(getComputedStyle(line).fontSize);
+            measurer.style.fontSize = size + "px";
+
+            // Shrink until text fits
+            while (measurer.offsetWidth > maxWidth && size > 16) {
+                size -= 1;
+                measurer.style.fontSize = size + "px";
             }
+
+            document.body.removeChild(measurer);
+            line.style.fontSize = size + "px";
         });
     }
 
@@ -646,6 +662,29 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     );
+
+    // Nav link scroll spy — glow active section link
+    const navLinks = document.querySelectorAll(".nav-link");
+    const sections = document.querySelectorAll("section[id]");
+
+    const scrollSpyObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.getAttribute("id");
+                navLinks.forEach(link => {
+                    link.classList.remove("active");
+                    if (link.getAttribute("href") === `#${id}`) {
+                        link.classList.add("active");
+                    }
+                });
+            }
+        });
+    }, {
+        threshold: 0.3,
+        rootMargin: "-10% 0px -10% 0px"
+    });
+
+    sections.forEach(section => scrollSpyObserver.observe(section));
 
     // ==========================================
     // 6. 3D PERSPECTIVE CAROUSEL & PORTAL SHOWCASE
