@@ -782,6 +782,15 @@ body.loading .scroll-indicator {
     overflow: hidden;
 }
 
+/* Allow 3D character animation on hero title wrapper */
+.hero-title .hero-name-line {
+    perspective: 600px;
+}
+
+.reveal-text:has(.hero-title) {
+    overflow: visible;
+}
+
 .subtitle {
     font-family: var(--font-body);
     font-size: 1.2rem;
@@ -793,13 +802,79 @@ body.loading .scroll-indicator {
 
 .hero-title {
     font-family: var(--font-heading);
-    font-size: clamp(2.2rem, 7vw, 6rem);
     font-weight: 800;
     line-height: 1;
     text-transform: uppercase;
     letter-spacing: -1px;
     margin-bottom: 30px;
-    word-break: break-word;
+    position: relative;
+}
+
+.hero-name-line {
+    display: block;
+    width: fit-content;
+    white-space: nowrap;
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    color: #ffffff;
+}
+
+.hero-name-line.hero-surname {
+    font-size: clamp(1.8rem, 6.5vw, 5.2rem);
+}
+
+/* Per-character animation spans */
+.hero-name-line .char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(60px) rotateX(-80deg);
+    transform-origin: 50% 100%;
+    color: #ffffff;
+}
+
+/* Gradient shimmer sweep on characters */
+@keyframes heroShimmer {
+    0% { background-position: 200% center; }
+    100% { background-position: -200% center; }
+}
+
+.hero-name-line.shimmer-active .char {
+    background: linear-gradient(
+        90deg,
+        #ffffff 0%,
+        #ffffff 35%,
+        var(--accent-color) 50%,
+        #ffffff 65%,
+        #ffffff 100%
+    );
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: heroShimmer 2s ease-in-out 1 forwards;
+}
+
+/* Glowing underline accent */
+.hero-title::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 3px;
+    margin-top: 15px;
+    background: linear-gradient(90deg, var(--accent-color), var(--accent-secondary), var(--accent-color));
+    background-size: 200% 100%;
+    border-radius: 2px;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    transition: width 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.hero-title.line-reveal::after {
+    width: 120px;
+    animation: glowPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 8px rgba(0, 240, 255, 0.3); }
+    100% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.6), 0 0 40px rgba(0, 240, 255, 0.15); }
 }
 
 .hero-desc {

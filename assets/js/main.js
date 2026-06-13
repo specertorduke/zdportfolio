@@ -99,9 +99,48 @@ document.addEventListener("DOMContentLoaded", () => {
     const introTitle = document.querySelector(".intro-title");
     if (introTitle) splitTextIntoSpans(introTitle);
 
+    // Split hero name lines into individual character spans for per-letter animation
+    const heroNameLines = document.querySelectorAll(".hero-name-line");
+    heroNameLines.forEach(line => {
+        const text = line.textContent.trim();
+        line.innerHTML = "";
+        [...text].forEach(char => {
+            const span = document.createElement("span");
+            span.className = "char";
+            span.textContent = char === " " ? "\u00A0" : char;
+            line.appendChild(span);
+        });
+    });
+
+    // Dynamic font size fitter — shrinks font if text overflows container
+    function fitHeroTitle() {
+        const container = document.querySelector(".hero-content");
+        if (!container) return;
+        const maxWidth = container.clientWidth;
+
+        heroNameLines.forEach(line => {
+            // Reset to CSS default first
+            line.style.fontSize = "";
+            const computedSize = parseFloat(getComputedStyle(line).fontSize);
+            let size = computedSize;
+
+            // Shrink until it fits
+            while (line.scrollWidth > maxWidth && size > 14) {
+                size -= 0.5;
+                line.style.fontSize = size + "px";
+            }
+        });
+    }
+
+    fitHeroTitle();
+    window.addEventListener("resize", fitHeroTitle);
+
     // Set initial states for main page elements to prevent flashing
     gsap.set(".navbar", { y: -30, opacity: 0 });
-    gsap.set(".hero .reveal-text > *", { y: 80, opacity: 0 });
+    gsap.set(".subtitle", { y: 80, opacity: 0 });
+    gsap.set(".hero-name-line .char", { opacity: 0, y: 60, rotationX: -80 });
+    gsap.set(".hero-desc", { y: 80, opacity: 0 });
+    gsap.set(".hero-cta", { y: 80, opacity: 0 });
     gsap.set(".scroll-indicator", { opacity: 0 });
 
     // 3. Intro Sequence Animations
@@ -446,23 +485,74 @@ document.addEventListener("DOMContentLoaded", () => {
     function runMainReveal() {
         const mainTl = gsap.timeline();
 
+        // Navbar
         mainTl.fromTo(".navbar",
             { y: -30, opacity: 0 },
             { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
-        ).fromTo(".hero .reveal-text > *",
+        );
+
+        // Subtitle
+        mainTl.fromTo(".subtitle",
+            { y: 80, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8, ease: "power4.out" },
+            "-=0.4"
+        );
+
+        // First name — per-character 3D flip
+        mainTl.to("#hero-first .char", {
+            opacity: 1,
+            y: 0,
+            rotationX: 0,
+            duration: 0.6,
+            stagger: 0.05,
+            ease: "back.out(2)",
+            transformPerspective: 600
+        }, "-=0.3");
+
+        // Surname — per-character 3D flip (slightly delayed)
+        mainTl.to("#hero-last .char", {
+            opacity: 1,
+            y: 0,
+            rotationX: 0,
+            duration: 0.6,
+            stagger: 0.035,
+            ease: "back.out(2)",
+            transformPerspective: 600
+        }, "-=0.3");
+
+        // Gradient shimmer sweep across both names
+        mainTl.add(() => {
+            document.querySelectorAll(".hero-name-line").forEach(line => {
+                line.classList.add("shimmer-active");
+            });
+        }, "-=0.1");
+
+        // Glowing underline reveal
+        mainTl.add(() => {
+            document.querySelector(".hero-title").classList.add("line-reveal");
+        }, "-=0.5");
+
+        // Description
+        mainTl.fromTo(".hero-desc",
+            { y: 80, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8, ease: "power4.out" },
+            "-=0.6"
+        );
+
+        // CTA button
+        mainTl.fromTo(".hero-cta",
             { y: 80, opacity: 0 },
             {
-                y: 0,
-                opacity: 1,
-                duration: 1.0,
-                stagger: 0.15,
-                ease: "power4.out",
+                y: 0, opacity: 1, duration: 0.8, ease: "power4.out",
                 onComplete: () => {
                     gsap.set(".hero-cta", { overflow: "visible" });
                 }
             },
             "-=0.5"
-        ).fromTo(".scroll-indicator",
+        );
+
+        // Scroll indicator
+        mainTl.fromTo(".scroll-indicator",
             { opacity: 0 },
             { opacity: 0.5, duration: 1 },
             "-=0.5"
