@@ -1038,34 +1038,34 @@ document.addEventListener("DOMContentLoaded", () => {
             title: "INSIGHTFUL",
             role: "Lead Developer",
             year: "2024",
-            desc: "A web-based accessibility app designed for blind and visually impaired users. Uses TensorFlow.js for real-time object detection, Tesseract.js for OCR text reading, and HSL-based color identification — all running 100% client-side in the browser. Every interaction is voice-first with haptic feedback, audio cues, and full ARIA accessibility, requiring no visual reading of the screen.",
+            desc: "A voice-first accessibility app that speaks everything it sees. Designed for blind and visually impaired users, every detection result, mode switch, and instruction is announced aloud through the Web Speech API — the user never needs to read the screen. Uses TensorFlow.js for object detection, Tesseract.js for OCR text reading, and HSL-based color identification, all running 100% client-side with haptic vibration, audio cues, and full ARIA accessibility.",
             tags: ["TensorFlow.js", "Tesseract.js", "Web Speech API", "JavaScript", "HTML/CSS"],
             codeLink: "https://github.com/specertorduke/insightful",
             slides: [
                 {
                     imgSrc: "assets/img/Insightful images/splash screen.png",
-                    caption: "Splash Screen: A clean, minimal welcome page with the INSIGHTFUL branding and eye icon. Features a prominent 'START →' button and 'Tap anywhere to begin' prompt against a soft lavender gradient background.",
-                    overlayText: ""
+                    caption: "Splash Screen: On launch, the app automatically speaks 'Welcome to Insightful!' — no visual reading needed. A single tap anywhere starts the camera and voice announces the active mode.",
+                    overlayText: "🔊 Voice: \"Welcome to Insightful!\""
                 },
                 {
                     imgSrc: "assets/img/Insightful images/object detection.png",
-                    caption: "Object Detection Mode: The app's camera feed analyzing a desk scene with TensorFlow.js COCO-SSD. A glassmorphic result toast announces detected objects — a laptop (92%), cup (87%), cell phone (84%), and potted plant (78%) — with confidence scores spoken aloud.",
-                    overlayText: ""
+                    caption: "Object Detection: After tapping to scan, the app speaks the results aloud — 'I see a laptop at 92%, a cup at 87%, a cell phone at 84%, and a potted plant at 78%.' Each detection triggers a haptic pulse and ascending audio chime.",
+                    overlayText: "🔊 Voice: \"I see a laptop (92%), a cup (87%),\\na cell phone (84%), and a potted plant (78%).\""
                 },
                 {
                     imgSrc: "assets/img/Insightful images/text reader.png",
-                    caption: "Text Reader Mode: Tesseract.js OCR engine extracting printed text from a book page. The result toast displays the parsed content — 'Chapter 4: The Path Forward' — with the full paragraph read aloud through the Web Speech API.",
-                    overlayText: ""
+                    caption: "Text Reader: The OCR engine extracts printed text and the Web Speech API reads the full content aloud — 'Detected text: Chapter 4, The Path Forward...' at a 0.9× speech rate for clearer comprehension.",
+                    overlayText: "🔊 Voice: \"Detected text: Chapter 4, The Path\\nForward. The intricate process of exploring...\""
                 },
                 {
                     imgSrc: "assets/img/Insightful images/color detection.png",
-                    caption: "Color Detection Mode: The camera pointed at a vibrant bouquet of red and yellow flowers. The HSL color analyzer samples the center 40% of the frame and identifies the dominant color as Red, announced via voice output.",
-                    overlayText: ""
+                    caption: "Color Detection: Points the camera at any surface and the app announces the dominant color — 'The dominant color is Red.' The HSL analyzer maps to 20+ descriptive names like 'Deep Teal' or 'Soft Amber', not just basic labels.",
+                    overlayText: "🔊 Voice: \"The dominant color is Red.\""
                 },
                 {
                     imgSrc: "assets/img/Insightful images/menu navigation.png",
-                    caption: "Navigation Menu: The expanded hamburger menu showing all three modes — Object Detection, Text Reader, and Color Detection — each with descriptive text. The active mode (Color Detection) is highlighted in amber with a matching color-coded border.",
-                    overlayText: ""
+                    caption: "Mode Navigation: Swiping left or right switches modes with a voice announcement — 'Switched to Color Detection.' A long-press reads a description of what the current mode does. Every interaction has voice + vibration + audio feedback.",
+                    overlayText: "🔊 Voice: \"Switched to Color Detection.\""
                 }
             ]
         },
