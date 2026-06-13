@@ -1440,7 +1440,7 @@ body.portal-open main {
 .portal-details-col {
     width: 40%;
     height: 100%;
-    padding: 60px 45px;
+    padding: 85px 45px 60px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -1484,7 +1484,7 @@ body.portal-open main {
     text-transform: uppercase;
     line-height: 1.1;
     color: #ffffff;
-    white-space: nowrap;
+    word-break: break-word;
 }
 
 .portal-divider {

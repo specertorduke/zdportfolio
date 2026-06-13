@@ -1073,16 +1073,23 @@ document.addEventListener("DOMContentLoaded", () => {
             title: "SPASWAB",
             role: "Programmer",
             year: "2023",
-            desc: "Solar-Powered Arduino-Based Smart Waste Bin incorporating IoT systems and hardware microcontroller logic. Detects hand proximity using ultrasonic sensors, drives servo motors for automated lids, and monitors waste level telemetry sent to a central log dashboard.",
-            tags: ["Arduino (C++)", "IoT Sensors", "SG90 Servo", "Ultrasonic Radar", "Fritzing"],
+            desc: "A Solar-Powered Arduino-Based Smart Waste Bin capable of automatically segregating plastic, metal, and non-plastic/non-metal waste using capacitive proximity sensors (LJC18A3-H/Z/BY), inductive proximity sensors, and ultrasonic ranging modules (HC-SR04). Powered entirely by solar energy via a solar panel and charge controller, the prototype achieved 100% segregation accuracy for plastics, 66.67% for metals, and 93.57% for non-plastic/non-metal waste — with a statistically significant p-value of 0.003.",
+            tags: ["Arduino (C++)", "IoT Sensors", "HC-SR04 Ultrasonic", "Solar Energy", "Experimental Research"],
             slides: [
                 {
-                    caption: "System Telemetry Gauge: Analog-styled dial gauges monitoring real-time battery storage percentages, solar grid input voltages, and vertical fill column capacities.",
-                    overlayText: "MODULE: TELEMETRY_DASH_MCU\\nBATTERY: 84% // SOLAR IN: 18.2V\\nBIN FILL PERCENT: 45.4% // GPS: LOCK"
+                    imgSrc: "assets/img/SPASWAB images/me programming.jpg",
+                    caption: "Hardware Assembly & Programming: Wiring and programming the Arduino microcontroller in the classroom, connecting the capacitive and inductive proximity sensors, HC-SR04 ultrasonic modules, and SG90 servo motors on a breadboard before final integration into the prototype.",
+                    overlayText: ""
                 },
                 {
-                    caption: "Proximity Servo Dynamics: Oscilloscope tracking real-time hand-to-lid distance curve fluctuations and automated servo motor open/close intervals.",
-                    overlayText: "MODULE: SERVO_PROXIMITY_OSCILLO\\nEVENT_FLAG: PROX_TRIGGER_90D_OPEN\\nSG90_TIMEOUT_CLOSE: ARMED"
+                    imgSrc: "assets/img/SPASWAB images/spaswab prototype.jpg",
+                    caption: "Finished Prototype: The completed Solar-Powered Arduino-Based Smart Waste Bin featuring three segregation compartments for plastic, metal, and non-plastic/non-metal waste. Equipped with a corrugated solar panel roof, sensor arrays at each disposal slot, and labeled safety signage for deployment at the Mintal Comprehensive Senior High School canteen.",
+                    overlayText: ""
+                },
+                {
+                    imgSrc: "assets/img/SPASWAB images/won best presenter and best prototype.jpg",
+                    caption: "Best Presenter & Best Prototype Award: Presenting the full research poster at the Work Immersion Culminating Program, showcasing the methodology, experimental results, and statistical analysis. Awarded Best Presenter and Best Prototype for the project.",
+                    overlayText: ""
                 }
             ]
         }
